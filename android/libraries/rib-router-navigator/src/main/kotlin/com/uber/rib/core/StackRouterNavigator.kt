@@ -231,7 +231,7 @@ open class StackRouterNavigator<StateT : RouterNavigatorState>(private val hostR
         Locale.getDefault(), "Attaching %s as a child of %s", toRouterName, hostRouterName
       )
     )
-    hostRouter.attachChildInternal(toRouterState.router)
+    hostRouter.attachChild(toRouterState.router)
   }
 
   /**
@@ -276,7 +276,7 @@ open class StackRouterNavigator<StateT : RouterNavigatorState>(private val hostR
       )
     }
     log(String.format(Locale.getDefault(), "Detaching %s from %s", fromRouterName, hostRouterName))
-    hostRouter.detachChildInternal(fromRouterState.router)
+    hostRouter.detachChild(fromRouterState.router)
     if (callback != null) {
       log(
         String.format(
@@ -406,7 +406,7 @@ open class StackRouterNavigator<StateT : RouterNavigatorState>(private val hostR
   companion object {
     /** Writes out to the debug log.  */
     private fun log(text: String) {
-      Rib.configuration?.handleDebugMessage("%s: $text", "RouterNavigator")
+      Rib.getConfiguration().handleDebugMessage("%s: $text", "RouterNavigator")
     }
   }
 

@@ -35,12 +35,16 @@ class RouterTest {
       ribRefWatcher,
       Thread.currentThread()
     ) {
+      override fun attachToInteractor() {
+        // ignore the Interactor since we're only testing the Router
+      }
+
       override fun didLoad() {
         super.didLoad()
         didLoad.set(true)
       }
     }
-    router.dispatchAttachInternal(null)
+    router.dispatchAttach(null)
     assertThat(didLoad.get()).isTrue()
   }
 }

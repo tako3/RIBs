@@ -79,14 +79,14 @@ abstract class RibActivity : CoreAppCompatActivity(), ActivityStarter, Lifecycle
     val wrappedBundle: Bundle? = if (savedInstanceState != null) Bundle(savedInstanceState) else null
     router = createRouter(rootViewGroup)
     router?.let {
-      it.dispatchAttachInternal(wrappedBundle)
+      it.dispatchAttach(wrappedBundle)
       rootViewGroup.addView(it.view)
-      RibEvents.instance.emitEvent(RibEventType.ATTACHED, it, null)
+      RibEvents.getInstance().emitEvent(RibEventType.ATTACHED, it, null)
     }
   }
 
   @CallSuper
-  public override fun onSaveInstanceState(outState: android.os.Bundle) {
+  override fun onSaveInstanceState(outState: android.os.Bundle) {
     super.onSaveInstanceState(outState)
     callbacksRelay.accept(createOnSaveInstanceStateEvent(outState))
     router?.saveInstanceStateInternal(Bundle(outState)) ?: throw NullPointerException("Router should not be null")
@@ -111,7 +111,7 @@ abstract class RibActivity : CoreAppCompatActivity(), ActivityStarter, Lifecycle
   }
 
   @CallSuper
-  public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     callbacksRelay.accept(createOnActivityResultEvent(requestCode, resultCode, data))
   }
@@ -132,8 +132,8 @@ abstract class RibActivity : CoreAppCompatActivity(), ActivityStarter, Lifecycle
   override fun onDestroy() {
     lifecycleRelay.accept(create(ActivityLifecycleEvent.Type.DESTROY))
     router?.let {
-      it.dispatchDetachInternal()
-      RibEvents.instance.emitEvent(RibEventType.DETACHED, it, null)
+      it.dispatchDetach()
+      RibEvents.getInstance().emitEvent(RibEventType.DETACHED, it, null)
     }
     router = null
     super.onDestroy()
@@ -184,7 +184,7 @@ abstract class RibActivity : CoreAppCompatActivity(), ActivityStarter, Lifecycle
    * Invoked when none of the ribs handle back press. In this case, default activity back press
    * behavior occurs.
    */
-  protected fun onUnhandledBackPressed() {}
+  protected open fun onUnhandledBackPressed() {}
 
   /**
    * @return the [Interactor] when the activity has alive.
@@ -192,7 +192,7 @@ abstract class RibActivity : CoreAppCompatActivity(), ActivityStarter, Lifecycle
    */
   open val interactor: Interactor<*, *>
     get() = if (router != null) {
-      router?.getInteractor() as Interactor<*, *>
+      router?.interactor as Interactor<*, *>
     } else {
       throw IllegalStateException(
         "Attempting to get a router when activity is not created or has been destroyed."

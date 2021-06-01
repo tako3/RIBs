@@ -15,10 +15,10 @@
  */
 package com.uber.rib.core
 
+import com.nhaarman.mockitokotlin2.isA
+import com.nhaarman.mockitokotlin2.isNull
+import com.nhaarman.mockitokotlin2.verify
 import org.mockito.AdditionalMatchers.or
-import org.mockito.Matchers.isA
-import org.mockito.Matchers.isNull
-import org.mockito.Mockito.verify
 
 /** The helper to test [Interactor].  */
 object InteractorHelper {
@@ -40,7 +40,7 @@ object InteractorHelper {
     savedInstanceState: Bundle?
   ) {
     interactor.actualPresenter = presenter
-    interactor.router = router
+    interactor.setRouterInternal(router)
     interactor.dispatchAttach(savedInstanceState)
   }
 
@@ -72,7 +72,7 @@ object InteractorHelper {
    */
   @JvmStatic
   open fun verifyAttached(interactor: Interactor<*, *>) {
-    verify(interactor).dispatchAttach(or(isNull(Bundle::class.java), isA(Bundle::class.java)))
+    verify(interactor).dispatchAttach(or(isNull(), isA<Bundle>()))
   }
 
   /**
